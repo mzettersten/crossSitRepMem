@@ -2,4 +2,6 @@
 html experiments for crossSit structure project
 
 ## Test Run
-https://mzettersten.github.io/crossSitRep_experiments/version1/crossSitRep_v1.html
+
+### Massed, Math
+https://mzettersten.github.io/crossSitRep_experiments/version1/crossSitRep_v1.html?mc=n&cond=m
