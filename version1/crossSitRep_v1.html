@@ -133,6 +133,12 @@ function createTrials(data, tabletop) {
   
   console.log(trial_info_training);
   console.log(trial_info_test);
+  // shuffle test trials
+  trial_info_test_shuffled = jsPsych.randomization.shuffle(trial_info_test);
+  //shuffle math problems
+  math_problems_info_shuffled = jsPsych.randomization.shuffle(math_problems_info);
+  
+  console.log(trial_info_test_shuffled);
 
 // DEFINE TRAINING TRIALS
 
@@ -189,12 +195,16 @@ show_clickable_nav: true
 
 trainingList.push(trial);
 
+var trialNum_counter=0
+
 for (j = 0; j < trial_info_training.length;  j++){
+	trialNum_counter=trialNum_counter+1
 	
 	var cur_trial = trial_info_training[j];
 		
 	 var prompt = {
 		 type: 'learning-prompt',
+		 preload_images: imageSet,
 		 location1: "left",
 		 location2: "right",
 		 im1: "stimuli/"+set_num+"/"+cur_trial["image1"],
@@ -221,7 +231,7 @@ for (j = 0; j < trial_info_training.length;  j++){
 	trainingList.push(trial);
 	
 	if (math_condition == "math") {
-		cur_math_trial = math_problems_info[j];
+		cur_math_trial = math_problems_info_shuffled[j];
 		var operator = "";
 		if (cur_math_trial["operation"]=="addition") {
 			operator = "+"
@@ -230,9 +240,9 @@ for (j = 0; j < trial_info_training.length;  j++){
 		}
 		var math_trial = {
 			type: 'production-math',
-			equation: cur_math_trial["number1"] + "  " + operator + "   " + cur_math_trial["number2"],
+			equation: cur_math_trial["number1"] + "  " + operator + "  " + cur_math_trial["number2"]+ "  =",
 			choices: ['ENTER'],
-			data: {trialNum: cur_math_trial["trial_num"], trialType: cur_math_trial["trial_type"]}
+			data: {trialNum: trialNum_counter, trialID_math: cur_math_trial["trial_num"], trialType: cur_math_trial["trial_type"], trialID: cur_math_trial["trial_id"],number1: cur_math_trial["number1"], number2: cur_math_trial["number2"], correct_solution: cur_math_trial["solution"],}
 		}
 		trainingList.push(math_trial);
 	}
@@ -254,19 +264,22 @@ show_clickable_nav: true
 testList.push(labelTestInstr);
 
 //test trials
-for (j = 0; j < trial_info_test.length;  j++){
+test_trial_counter=0
+for (j = 0; j < trial_info_test_shuffled.length;  j++){
+	test_trial_counter=test_trial_counter+1
 	
-	var cur_trial = trial_info_test[j];
+	var cur_trial = trial_info_test_shuffled[j];
 		
 	var test = {
 		type: 'comprehension-test',
 			image1: "stimuli/"+set_num+"/"+cur_trial["image1"],
 			image2: "stimuli/"+set_num+"/"+cur_trial["image2"],
+		preload_images: imageSet,
 			audio: "stimuli/"+set_num+"/"+cur_trial["sound"],
 			targetLocation: cur_trial["respLocation"],
 			targetImage: "stimuli/"+set_num+"/"+cur_trial["correct"],
 		choices: ['START AUDIO'],
-	    	data: {trialNum: cur_trial["trial_num"], trialType: cur_trial["trial_type"]}
+	    	data: {trialNum: test_trial_counter, trialID: cur_trial["trial_num"], trialType: cur_trial["trial_type"]}
 	};
 	
 	testList.push(test);
@@ -282,10 +295,9 @@ var survey = {
 
 testList.push(survey);
 
-
-
 //combine all trials into timeline
 timeline=trainingList.concat(testList);
+//timeline=testList;
 
 // CREATE FINAL EXPERIMENT MESSAGE/ DEBRIEF AFTER DATA SUCCESSFULLY STORED
 // including a random code participants can use to confirm they took the study (for payment on Amazon Mechanical Turk)
@@ -343,26 +355,26 @@ experimentFinal.push(final_instructions);
  
 //preload all images
 var imageSet = [
-	"stimuli/set1/Pictures/picture1.jpg",
-	"stimuli/set1/Pictures/picture2.jpg",
-	"stimuli/set1/Pictures/picture3.jpg",
-	"stimuli/set1/Pictures/picture4.jpg",
-	"stimuli/set1/Pictures/picture5.jpg",
-	"stimuli/set1/Pictures/picture6.jpg",
-	"stimuli/set1/Pictures/picture7.jpg",
-	"stimuli/set1/Pictures/picture8.jpg",
-	"stimuli/set1/Pictures/picture9.jpg",
-	"stimuli/set1/Pictures/picture10.jpg",
-	"stimuli/set2/Pictures/picture1.jpg",
-	"stimuli/set2/Pictures/picture2.jpg",
-	"stimuli/set2/Pictures/picture3.jpg",
-	"stimuli/set2/Pictures/picture4.jpg",
-	"stimuli/set2/Pictures/picture5.jpg",
-	"stimuli/set2/Pictures/picture6.jpg",
-	"stimuli/set2/Pictures/picture7.jpg",
-	"stimuli/set2/Pictures/picture8.jpg",
-	"stimuli/set2/Pictures/picture9.jpg",
-	"stimuli/set2/Pictures/picture10.jpg",
+	"stimuli/set1/Pictures/picture1.png",
+	"stimuli/set1/Pictures/picture2.png",
+	"stimuli/set1/Pictures/picture3.png",
+	"stimuli/set1/Pictures/picture4.png",
+	"stimuli/set1/Pictures/picture5.png",
+	"stimuli/set1/Pictures/picture6.png",
+	"stimuli/set1/Pictures/picture7.png",
+	"stimuli/set1/Pictures/picture8.png",
+	"stimuli/set1/Pictures/picture9.png",
+	"stimuli/set1/Pictures/picture10.png",
+	"stimuli/set2/Pictures/picture1.png",
+	"stimuli/set2/Pictures/picture2.png",
+	"stimuli/set2/Pictures/picture3.png",
+	"stimuli/set2/Pictures/picture4.png",
+	"stimuli/set2/Pictures/picture5.png",
+	"stimuli/set2/Pictures/picture6.png",
+	"stimuli/set2/Pictures/picture7.png",
+	"stimuli/set2/Pictures/picture8.png",
+	"stimuli/set2/Pictures/picture9.png",
+	"stimuli/set2/Pictures/picture10.png",
 ];
 
 //preload audio (if audio gets added at some later point)  
@@ -404,8 +416,6 @@ function updateLoadedCount(nLoaded){
 //run this line instead if we add audio
 jsPsych.pluginAPI.preloadImages(imageSet, function(){ jsPsych.pluginAPI.preloadAudioFiles(allAudio, function() {startExperiment(); },function(nLoaded) { updateLoadedCount(nLoaded); });});
 
-//jsPsych.pluginAPI.preloadImages(imageSet, function() {startExperiment();});
-  
   
 // START & RUN EXPERIMENT
 // including unctions that handle storing the data

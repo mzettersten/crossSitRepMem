@@ -65,7 +65,7 @@ jsPsych.plugins["audio-check"] = (function() {
     }));
 	
 	//add text box
-	$("#jspsych-survey-text").append('<textarea id="jspsych-survey-text-response" cols="' + trial.columns + '" rows="' + trial.rows + '" autocorrect="off" autocapitalize="off" autocomplete="off" spellcheck="false"></textarea>');
+	$("#jspsych-survey-text").append('<textarea id="jspsych-survey-text-check" cols="' + trial.columns + '" rows="' + trial.rows + '" autocorrect="off" autocapitalize="off" autocomplete="off" spellcheck="false"></textarea>');
 	//$("#jspsych-survey-text").append('<textarea id="jspsych-survey-text-response" cols="' + trial.columns[i] + '" rows="' + trial.rows[i] + '"></textarea>');
 
 
@@ -89,7 +89,7 @@ jsPsych.plugins["audio-check"] = (function() {
         var endTime = (new Date()).getTime();
         var response_time = endTime - startTime;
 		
-		var val = document.getElementById("jspsych-survey-text-response").value;
+		var val = document.getElementById("jspsych-survey-text-check").value;
 		console.log(val);
 
       // stop the audio file if it is playing
