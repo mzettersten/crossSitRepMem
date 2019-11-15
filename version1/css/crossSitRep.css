@@ -81,9 +81,8 @@ input[type=number]{
 }
 
 #jspsych-produce-3 {
-	font-size: 18pt;
 	position: absolute;
-	left: 250px;
+	left: 300px;
 	top: 220px;
 	
 }
@@ -114,7 +113,12 @@ input[type=number]{
 }
 
 #jspsych-prodbox-3 {
-	font-size: 36pt;	
+	font-size: 32pt;
+	font-weight: bold;
+}
+
+#jspsych-survey-text-check {
+	font-size: 16pt;	
 }
 
 

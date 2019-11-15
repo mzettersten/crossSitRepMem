@@ -8,9 +8,9 @@ jsPsych.plugins['comprehension-test'] = (function() {
 
   var plugin = {};
   
-  jsPsych.pluginAPI.registerPreload('comprehension-test-prompt', 'image1', 'image');
-  jsPsych.pluginAPI.registerPreload('comprehension-test-prompt', 'image2', 'image');
-  jsPsych.pluginAPI.registerPreload('learning', 'audio', 'audio');
+  jsPsych.pluginAPI.registerPreload('comprehension-test', 'image1', 'image');
+  jsPsych.pluginAPI.registerPreload('comprehension-test', 'image2', 'image');
+  jsPsych.pluginAPI.registerPreload('comprehension-test', 'audio', 'audio');
 
   plugin.trial = function(display_element, trial) {
 	  
@@ -124,7 +124,8 @@ jsPsych.plugins['comprehension-test'] = (function() {
 			  end_time = (new Date()).getTime();
 			  rt = end_time - start_time;
 			  circle1.attr({
-				  fill: "#00ccff"
+				  fill: "#00ccff",
+				  "fill-opacity": 0.5
 			  });
 			  choice = trial.image1;
 			  choiceLocation = "pos1";
@@ -135,7 +136,8 @@ jsPsych.plugins['comprehension-test'] = (function() {
 			  end_time = (new Date()).getTime();
 			  rt = end_time - audio_start_time;
 			  circle2.attr({
-				  fill: "#00ccff"
+				  fill: "#00ccff",
+				  "fill-opacity": 0.5
 			  });
 			  choice = trial.image2;
 			  choiceLocation = "pos2";

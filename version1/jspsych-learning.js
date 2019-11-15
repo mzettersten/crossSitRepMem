@@ -127,7 +127,8 @@ jsPsych.plugins['learning'] = (function() {
 			"location2": trial.location2,
 			"image1": trial.im1,
 			"image2": trial.im2,
-			"audio": trial.audio	
+			"audio1": trial.audio1,
+			"audio2": trial.audio2	
 		};
 		
 		display_element.html('');

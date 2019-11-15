@@ -31,7 +31,7 @@ jsPsych.plugins['production-math'] = (function() {
       var paper = Snap("#jspsych-test-canvas");
 	  
 	  
-	  var equationRect = paper.rect(300, 95, 200,75, 10,10);
+	  var equationRect = paper.rect(275, 95, 250,75, 10,10);
 	  equationRect.attr({
 		  fill: "#FFD3D6",
 		  stroke: "#000",
@@ -72,7 +72,7 @@ jsPsych.plugins['production-math'] = (function() {
 	  display_element.append($('<div>', {
         "id": 'jspsych-produce-3',
       }));
-	  $("#jspsych-produce-3").append('<textarea id="jspsych-prodbox-3" cols="10" rows="1" autocorrect="off" autocapitalize="off" autocomplete="off" spellcheck="false"></textarea>');
+	  $("#jspsych-produce-3").append('<textarea id="jspsych-prodbox-3" cols="8" rows="1" autocorrect="off" autocapitalize="off" autocomplete="off" spellcheck="false"></textarea>');
 	  boxID = "jspsych-prodbox-3";
 	  // bottomCircle.attr({
 	  // 		  fill: "#00ccff",
