@@ -11,15 +11,11 @@ In order to test other conditions, replace the end of the link with other condit
 
 **Math/ No Math condition**: 
 
-**Math**: mc=as
-
-**No Math**: mc=n
+**Math**: mc=as **OR** **No Math**: mc=n
 
 **Structure condition**: 
 
-**Massed**: cond=m
-
-**Interleaved**: cond=i
+**Massed**: cond=m **OR** **Interleaved**: cond=i
 
 **Set**: 
 
