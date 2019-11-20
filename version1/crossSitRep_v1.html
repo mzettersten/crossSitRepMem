@@ -75,6 +75,20 @@ if (set_num_temp == "set1") {
 	var set_num = "set1";
 }
 
+//list
+var list_num_temp=getParamFromURL( 'list' );
+if (list_num_temp == "list1") {
+	var list_num = "1";
+} else if (list_num_temp == "list2") {
+	var list_num = "2";
+} else if (list_num_temp == "list3") {
+	var list_num = "3";
+} else if (list_num_temp == "list4") {
+	var list_num = "4";
+} else {
+	var list_num = "1";
+}
+
 
 
 //math condition
@@ -96,6 +110,7 @@ jsPsych.data.addProperties({
 	condition: condition,
 	workerId: workerId,
 	set_num: set_num,
+	list_num: list_num,
 	math_condition: math_condition
 });
 
@@ -114,7 +129,7 @@ function createTrials(data, tabletop) {
 
   math_problems_info = data["math_problems"]["elements"];
   console.log(math_problems_info);
-  trial_info = data["trial_list_"+condition]["elements"];
+  trial_info = data["trial_list_"+condition+"_"+list_num]["elements"];
   console.log(trial_info);
   
   trial_info_training = [];
@@ -162,7 +177,7 @@ trainingList.push(trial);
 
 var audio_check = {
 	type: 'audio-check',
-	prompt: "Click on the Play button to hear an audio recording. Then enter the word you heard. Click the button to hear the sound again. Click on the Submit Answers button when you are finished <br>",
+	prompt: "Click on the Play button to hear an audio recording. Then enter the word you heard. Click the button to hear the sound again. Click on the 'Submit answer' button when you are finished <br>",
 	timeline: [
 		{stimulus: 'stimuli/apple.m4a'},
 		{stimulus: 'stimuli/ball.m4a'},
@@ -172,7 +187,7 @@ var audio_check = {
 trainingList.push(audio_check);
 
 var instruction_info =
-"Great! Now, let's begin with the experiment. In the first task, you will learn the names for 8 different objects. On each trial, you will see two objects and hear two words. At first, you won't know which word goes with which object because the words appear <b>in random order</b>. Try to figure out over time which word goes with which object. Please do not write any information down - just do your best to remember and learn the words as you go. Remember that you'll hear the word for each of the two objects, but the order of the words will be completely random (so, for example, the first word that appears does not necessarily go with the left object).";
+"Great! Now, let's begin with the experiment. In the first task, you will learn the names for 8 different objects. On each trial, you will see two objects and hear two words. At first, you won't know which word goes with which object because the words will play <b>in random order</b>. Try to figure out over time which word goes with which object. Please do not write any information down - just do your best to remember and learn the words as you go. Remember that you'll hear the word for each of the two objects, but the order of the words will be completely random (so, for example, the first word that plays does not necessarily go with the left object).";
 
 var math_info = "<br><br>After each learning example, you will be asked to solve a math problem. We will either ask you to add together two numbers or subtract two numbers. Try to solve each problem as accurately as you can.\n\n Make sure your audio is still on, then click NEXT to start learning!";
 
@@ -257,7 +272,7 @@ var testList=[];
 // put in instructions about being fast here if we are interested in RTs
 var labelTestInstr = {
 type: 'instructions',
-pages: ['Now we will test how well you learned the words. You will see a word and be asked to choose which of the two pictured objects goes with the word. In each trial, click START AUDIO. The word for one of the objects will be played. Click on the word you think the word refers to. Click NEXT to get started.'],
+pages: ['Now we will test how well you learned the words. You will see a word and be asked to choose which of the two pictured objects goes with the word. In each trial, click START AUDIO. The word for one of the objects will be played. Click on the object you think the word refers to. Click NEXT to get started.'],
 show_clickable_nav: true
 }
 
@@ -288,7 +303,7 @@ for (j = 0; j < trial_info_test_shuffled.length;  j++){
 // final response survey
 var survey = {
   type: 'survey-text',
-  questions: ["What strategy did you use to learn the words of the objects? (e.g., did you focus on tracking particular words or objects?)", "Did you have any audio or other technical issues during the study?"],
+  questions: ["What strategy did you use to learn the words for the objects? (e.g., did you focus on tracking particular words or objects?)", "Did you have any audio or other technical issues during the study?"],
   rows: [8,8],
   columns: [70,70]
 };
