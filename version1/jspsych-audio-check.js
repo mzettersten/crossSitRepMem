@@ -76,7 +76,7 @@ jsPsych.plugins["audio-check"] = (function() {
       'id': 'jspsych-survey-text-next',
       'class': 'jspsych-btn jspsych-survey-text'
     }));
-    $("#jspsych-survey-text-next").html('Submit answer');
+    $("#jspsych-survey-text-next").html('Submit Answer');
     $("#jspsych-survey-text-next").click(function() {
 		end_trial();
 	});

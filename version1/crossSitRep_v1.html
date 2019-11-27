@@ -44,15 +44,15 @@ function getParamFromURL( name ) {
 		return results[1];
 }
 
-//for Amazon Mechanical Turk (workerId added to link via Qualtrics)
-//save workerID if it is part of the survey URL ?workerId=
-var workerId = getParamFromURL( 'workerId' );
+//for Qualtrics ID
+//save qualtricsID if it is part of the survey URL ?qualtricsId=
+var qualtricsId = getParamFromURL( 'qualtricsId' );
 //otherwise just use the randomly generated subject ID
-if (workerId==="") {
-	workerId=subject_id;
+if (qualtricsId==="") {
+	qualtricsId=subject_id;
 };
 //make sure that nobody can enter anything damaging or crazy for workerId
-workerId.replace(/[^A-Za-z0-9_]/g, "");
+qualtricsId.replace(/[^A-Za-z0-9_]/g, "");
  
 //condition
 var condition_temp=getParamFromURL( 'cond' );
@@ -108,7 +108,7 @@ if (math_condition_temp == "as") {
 jsPsych.data.addProperties({
 	subject: subject_id,
 	condition: condition,
-	workerId: workerId,
+	qualtricsId: qualtricsId,
 	set_num: set_num,
 	list_num: list_num,
 	math_condition: math_condition
@@ -168,7 +168,7 @@ var trainingList = [];
 var trial = {
 type: 'instructions',
 pages: [
-  'Welcome to this experiment. In this experiment you will learn names for novel objects. There will be few different learning tasks as you go.<br><br>You will need to hear audio during the experiment, so make sure you are using an up-to-date browser (Firefox, Chrome, or Safari should all be good options). First, we will check that your audio is working properly. We will play you simple words and ask you to type in what you hear. Pay close attention - we will only accept HITs in which people pass this initial audio test. Make sure your audio is turned on, then click NEXT to start the audio test!',
+  'Welcome to this experiment. In this experiment you will learn names for novel objects. There will be a few different learning tasks as you go.<br><br>You will need to hear audio during the experiment, so make sure you are using an up-to-date browser (Firefox, Chrome, or Safari should all be good options). First, we will check that your audio is working properly. We will play you simple words and ask you to type in what you hear. Pay close attention - we will only accept HITs in which people pass this initial audio test. Make sure your audio is turned on, then click NEXT to start the audio test!',
 ],
 show_clickable_nav: true
 }
@@ -177,7 +177,7 @@ trainingList.push(trial);
 
 var audio_check = {
 	type: 'audio-check',
-	prompt: "Click on the Play button to hear an audio recording. Then enter the word you heard. Click the button to hear the sound again. Click on the 'Submit answer' button when you are finished <br>",
+	prompt: "Click on the Play button to hear an audio recording. Then enter the word you heard. Click the Play button to hear the sound again. Click on the Submit Answer button when you are finished.<br>",
 	timeline: [
 		{stimulus: 'stimuli/apple.m4a'},
 		{stimulus: 'stimuli/ball.m4a'},
@@ -189,7 +189,7 @@ trainingList.push(audio_check);
 var instruction_info =
 "Great! Now, let's begin with the experiment. In the first task, you will learn the names for 8 different objects. On each trial, you will see two objects and hear two words. At first, you won't know which word goes with which object because the words will play <b>in random order</b>. Try to figure out over time which word goes with which object. Please do not write any information down - just do your best to remember and learn the words as you go. Remember that you'll hear the word for each of the two objects, but the order of the words will be completely random (so, for example, the first word that plays does not necessarily go with the left object).";
 
-var math_info = "<br><br>After each learning example, you will be asked to solve a math problem. We will either ask you to add together two numbers or subtract two numbers. Try to solve each problem as accurately as you can.\n\n Make sure your audio is still on, then click NEXT to start learning!";
+var math_info = "<br><br>After each learning example, you will be asked to solve a math problem. We will either ask you to add together two numbers or subtract two numbers. Try to solve each problem as accurately as you can in your head. Please do not use a calculator or any other tool to help with the calculation. Just try to do your best solving each problem as quickly and accurately as you can in your head.\n\n Make sure your audio is still on, then click NEXT to start learning!";
 
 if (math_condition == "math") {
 	instruction_info=instruction_info+math_info;
@@ -272,11 +272,23 @@ var testList=[];
 // put in instructions about being fast here if we are interested in RTs
 var labelTestInstr = {
 type: 'instructions',
-pages: ['Now we will test how well you learned the words. You will hear a word and be asked to choose which of the two pictured objects goes with the word. In each trial, click START AUDIO. The word for one of the objects will be played. Click on the object you think the word refers to. Click NEXT to get started.'],
+pages: ['Now we will test how well you learned the words. You will hear a word and be asked to choose which of the two pictured objects goes with the word. In each trial, click START AUDIO. The word for one of the objects will be played. Click on the object you think the word refers to. First, we will test a few familiar words, to make sure your audio is working properly. Then, we will test how well you learned the new words. Click NEXT to get started.'],
 show_clickable_nav: true
 }
 
 testList.push(labelTestInstr);
+
+//familiar test trials
+var fam_test = {
+	type: 'comprehension-test',
+	choices: ['START AUDIO'],
+	timeline: [
+		{audio: 'stimuli/apple.m4a', image1: "stimuli/basketball.png", image2: "stimuli/apple.png", targetLocation: "right", targetImage: "stimuli/apple.png", data: {trialNum: 1, trialType: "familiar_test"}},
+		{audio: 'stimuli/ball.m4a', image1: "stimuli/basketball.png", image2: "stimuli/apple.png", targetLocation: "left", targetImage: "stimuli/basketball.png",data: {trialNum: 2, trialType: "familiar_test"}},
+	]
+};
+
+testList.push(fam_test);
 
 //test trials
 test_trial_counter=0
@@ -289,7 +301,6 @@ for (j = 0; j < trial_info_test_shuffled.length;  j++){
 		type: 'comprehension-test',
 			image1: "stimuli/"+set_num+"/"+cur_trial["image1"],
 			image2: "stimuli/"+set_num+"/"+cur_trial["image2"],
-		preload_images: imageSet,
 			audio: "stimuli/"+set_num+"/"+cur_trial["sound"],
 			targetLocation: cur_trial["respLocation"],
 			targetImage: "stimuli/"+set_num+"/"+cur_trial["correct"],
@@ -370,6 +381,8 @@ experimentFinal.push(final_instructions);
  
 //preload all images
 var imageSet = [
+	"stimuli/basketball.png",
+	"stimuli/apple.png",
 	"stimuli/set1/Pictures/picture1.png",
 	"stimuli/set1/Pictures/picture2.png",
 	"stimuli/set1/Pictures/picture3.png",
