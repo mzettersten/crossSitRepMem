@@ -5,17 +5,14 @@ library(lme4)
 library(here)
 theme_set(theme_cowplot())
 
-#set here
-set_here()
-
 #current directory
 cur_dir <- here()
 
-#data file
-data_file <- paste(cur_dir,"open_data")
+#folder path separator
+path_sep="/"
 
 #read in data
-d <- read_csv(paste(cur_dir,"open_data/CrossSitRepMem_v1_data_cleaned.csv")
+d <- read_csv(paste(cur_dir,"analysis","version1","open_data","CrossSitRepMem_v1_data_cleaned.csv",sep=path_sep))
 
 #look at data
 head(d)
