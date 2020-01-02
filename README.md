@@ -4,7 +4,7 @@ html experiments for crossSit structure project
 ## Test Run
 
 ### Massed, Math, Set 1, List 1
-https://mzettersten.github.io/crossSitRep_experiments/version1/crossSitRep_v1.html?mc=as&cond=m&list=list1&set=set1
+https://mzettersten.github.io/crossSitRepMem/version1/crossSitRep_v1.html?mc=as&cond=m&list=list1&set=set1
 
 
 In order to test other conditions, replace the end of the link with other condition/ counterbalancing options:
