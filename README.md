@@ -1,7 +1,7 @@
 # crossSitRepMem
-html experiments for crossSit structure project
+CrossSit structure project
 
-## Test Run
+## Test Run Experiment 1
 
 ### Massed, Math, Set 1, List 1
 https://mzettersten.github.io/crossSitRepMem/experiments/version1/crossSitRep_v1.html?mc=as&cond=m&list=list1&set=set1
