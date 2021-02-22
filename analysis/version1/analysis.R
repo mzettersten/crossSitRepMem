@@ -49,6 +49,29 @@ testSubj <- merge(testSubj,audioCheck)
 mean(filter(testSubj,trialType=="familiar_test")$accuracy)
 
 
+#### demographics ####
+
+demographics <- d %>%
+  #filter(!(subject %in% subj_to_exclude)) %>%
+  group_by(subject,condition, math_condition) %>%
+  summarize(Gender=gender[1],age=age_clean[1],education=education[1],languages_besides_english_yn=languages_besides_english[1],L1=native_language[1]) %>%
+  ungroup() %>%
+  mutate(L1_english=case_when(
+    languages_besides_english_yn=="no" ~ 1,
+    str_detect("english",L1) ~ 1,
+    TRUE ~ 0
+  )) %>%
+  group_by(condition, math_condition)  %>%
+  summarize(
+    N=n(),
+    gender_f=sum(Gender=="female"),
+    mean_age=round(mean(age,na.rm=T),2),
+    sd_age=round(sd(age,na.rm=T),2),
+    min_age=round(min(age,na.rm=T),2),
+    max_age=round(max(age,na.rm=T),2),
+    native_english=sum(L1_english,na.rm=TRUE),
+    languages_besides_english=sum(languages_besides_english_yn=="yes",na.rm=TRUE))
+
 #### summarize accuracy by condition ####
 
 #summarize subject data
