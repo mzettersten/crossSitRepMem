@@ -14,7 +14,7 @@ jsPsych.plugins['production-memory'] = (function() {
       trial.canvas_size = trial.canvas_size || [1024,315];
 	  trial.targetLocation = trial.targetLocation || "top";
 	  trial.sequence = trial.sequence;
-	  trial.question2 = trial.question2 || "Type the number sequence in the correct order into the text box.";
+	  trial.question = trial.question || "Type the number sequence in the correct order into the text box.";
 	  trial.finishText = trial.finishText || "Click the ENTER button when you are finished.";
 	  trial.timing_post_trial = typeof trial.timing_post_trial == 'undefined' ? 500 : trial.timing_post_trial;
 	  trial.feedback = trial.feedback || "You entered an invalid response. Please enter your best guess for the number sequence.";
@@ -130,7 +130,7 @@ jsPsych.plugins['production-memory'] = (function() {
 		//audioFeedback.play();
 		var isRight=0
 	  
-	  if (val == trial.sequence) {
+	  if (rating == trial.sequence) {
 		  var feedbackText = paper.text(400, 300, trial.correct_feedback);
 		  feedbackText.attr({
 			  "text-anchor": "middle",
