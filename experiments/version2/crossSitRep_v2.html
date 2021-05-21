@@ -1,0 +1,504 @@
+<!doctype html>
+<html>
+
+<head>
+  	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" >
+  	<script src="js/jquery.min.js"></script>
+	<script src="js/jquery-ui.min.js"></script>
+  	<script src="js/snap.svg-min.js"></script> 
+  	<script src="js/jspsych.js"></script>
+	<script src="plugins/jspsych-instructions.js"></script>
+  	<script src="jspsych-learning.js"></script>
+	<script src="jspsych-learning-prompt.js"></script>
+	<script src="jspsych-production-mmemory.js"></script>
+	<script src="jspsych-comprehension-test.js"></script>
+	<script src="jspsych-audio-check.js"></script>
+  	<script src="plugins/jspsych-button-response.js"></script>
+  	<script src="plugins/jspsych-survey-text.js"></script>
+    <link rel="stylesheet" href="css/jspsych.css"></link>
+	<link rel="stylesheet" href="css/jquery-ui.css"></link>
+    <link rel="stylesheet" href="css/crossSitRep.css"></link>
+	<script src='https://cdnjs.cloudflare.com/ajax/libs/tabletop.js/1.5.1/tabletop.min.js'></script>
+</head>
+
+<body>
+  <div id="jspsych-target"></div>
+</body>
+<script>
+
+// ORGANIZE SUBJECT ID & GENERAL PARAMETERS
+
+// generate a random subject ID (just to be safe)
+var subject_id = Math.floor(Math.random()*1000000);
+subject_id="p"+subject_id.toString();
+
+//general function for grabbing parameter from a URL
+function getParamFromURL( name ) {
+	name = name.replace(/[\[]/,"\\[").replace(/[\]]/,"\\]");
+	var regexS = "[\?&]"+name+"=([^&#]*)";
+	var regex = new RegExp( regexS );
+	var results = regex.exec( window.location.href );
+	if( results == null )
+		return "";
+	else
+		return results[1];
+}
+
+//for Qualtrics ID
+//save qualtricsID if it is part of the survey URL ?qualtricsId=
+var qualtricsId = getParamFromURL( 'qualtricsId' );
+//otherwise just use the randomly generated subject ID
+if (qualtricsId==="") {
+	qualtricsId=subject_id;
+};
+//make sure that nobody can enter anything damaging or crazy for workerId
+qualtricsId.replace(/[^A-Za-z0-9_]/g, "");
+ 
+//condition
+var condition_temp=getParamFromURL( 'cond' );
+//convert to more descriptive label (masked in URL to avoid biasing participant)
+if (condition_temp=="i") {
+	var condition="interleaved";
+} else if (condition_temp=="m") {
+	var condition="massed";
+} else {
+	var condition="massed";
+};
+
+//set
+var set_num_temp=getParamFromURL( 'set' );
+if (set_num_temp == "set1") {
+	var set_num = "set1";
+} else if (set_num_temp == "set2") {
+	var set_num = "set2";
+} else {
+	var set_num = "set1";
+}
+
+//list
+var list_num_temp=getParamFromURL( 'list' );
+if (list_num_temp == "list1") {
+	var list_num = "1";
+} else if (list_num_temp == "list2") {
+	var list_num = "2";
+} else if (list_num_temp == "list3") {
+	var list_num = "3";
+} else if (list_num_temp == "list4") {
+	var list_num = "4";
+} else {
+	var list_num = "1";
+}
+
+
+
+//memory condition
+var memory_condition_temp = getParamFromURL( 'mc' );
+if (memory_condition_temp == "as") {
+	var memory_condition = "high";
+} else if (memory_condition_temp == "n") {
+	var memory_condition = "low";
+} else {
+	var memory_condition = "high";
+}
+
+
+
+// record the condition assignment in the jsPsych data
+// this adds a property called 'subject', a property called workerId, and a condition property
+jsPsych.data.addProperties({
+	subject: subject_id,
+	condition: condition,
+	qualtricsId: qualtricsId,
+	set_num: set_num,
+	list_num: list_num,
+	memory_condition: memory_condition
+});
+
+//access trial spreadsheet
+var publicSpreadsheetUrl = 'https://docs.google.com/spreadsheets/d/1rcWSNy9ZbbMnNoI9njz4_M_WWKsOD7FEaJxlKkCrn0s/edit?usp=sharing';
+
+var tabletop = Tabletop.init( { key: publicSpreadsheetUrl,
+                   callback: startExperiment,
+                   simpleSheet: false } )
+
+//define timeline parameters as global variables
+var timeline = [];
+var experimentFinal = [];
+
+function createTrials(data, tabletop) {
+
+  trial_info = data["trial_list_"+condition+"_"+list_num]["elements"];
+  console.log(trial_info);
+  
+  trial_info_training = [];
+  trial_info_test = [];
+
+  for (i = 0; i < trial_info.length;  i++){
+	
+  	var cur_trial = trial_info[i];
+	
+  	if (cur_trial["trial_type"]=="training") {
+  		trial_info_training.push(cur_trial);
+  	} else if (cur_trial["trial_type"]=="test") {
+  		trial_info_test.push(cur_trial);
+  	}
+  };
+  
+  console.log(trial_info_training);
+  console.log(trial_info_test);
+  // shuffle test trials
+  trial_info_test_shuffled = jsPsych.randomization.shuffle(trial_info_test);
+  
+  console.log(trial_info_test_shuffled);
+
+// DEFINE TRAINING TRIALS
+
+var ITI = 500;
+
+
+//training trials
+var trainingList = [];
+
+// start with a general instruction
+
+var trial = {
+type: 'instructions',
+pages: [
+  'Welcome to this experiment. In this experiment you will learn names for novel objects. There will be a few different learning tasks as you go.<br><br>You will need to hear audio during the experiment, so make sure you are using an up-to-date browser (Firefox, Chrome, or Safari should all be good options). First, we will check that your audio is working properly. We will play you simple words and ask you to type in what you hear. Pay close attention - we will only accept HITs in which people pass this initial audio test. Make sure your audio is turned on, then click NEXT to start the audio test!',
+],
+show_clickable_nav: true
+}
+
+trainingList.push(trial);
+
+var audio_check = {
+	type: 'audio-check',
+	prompt: "Click on the Play button to hear an audio recording. Then enter the word you heard. Click the Play button to hear the sound again. Click on the Submit Answer button when you are finished.<br>",
+	timeline: [
+		{stimulus: 'stimuli/apple.m4a'},
+		{stimulus: 'stimuli/ball.m4a'},
+	]
+};
+
+trainingList.push(audio_check);
+
+var instruction_info =
+"Great! Now, let's begin with the experiment. In the first task, you will learn the names for 8 different objects. On each trial, you will see two objects and hear two words. At first, you won't know which word goes with which object because the words will play <b>in random order</b>. Try to figure out over time which word goes with which object. Please do not write any information down - just do your best to remember and learn the words as you go. Remember that you'll hear the word for each of the two objects, but the order of the words will be completely random (so, for example, the first word that plays does not necessarily go with the left object).";
+
+var memory_info = "<br><br>At the beginning of every four trials, we will ask you to remember a sequence of five numbers (for example, the number sequence 54871). Your job is to try to remember this exact sequence while you are learning the words. After 4 trials, we will ask you to type in the number sequence from memory and give you feedback on whether you remembered it correctly. Then, we will show you a new number sequence to remember for the next four word learning trials. Try to remember the number sequence as best as you can. Please do not write down or copy the number - your compensation for the task will not depend on getting the number sequences correct. Just try to remember the numbers in order as best as you can as you learn the words.\n\n Make sure your audio is still on, then click NEXT to start learning!";
+
+instruction_info=instruction_info+memory_info;
+console.log(instruction_info)
+
+var instruction_info_2 = "Make sure your audio is still on, then click NEXT to begin."
+
+var instruction_pages = [instruction_info,instruction_info_2];
+
+console.log(instruction_pages);
+
+var trial = {
+type: 'instructions',
+pages: instruction_pages,
+show_clickable_nav: true
+}
+
+trainingList.push(trial);
+
+var trialNum_counter=0
+
+var cur_number_sequence = "";
+var num_array = ["0","1","2","3","4","5","6","7","8","9"];
+var sequence_size = 5;
+
+for (j = 0; j < trial_info_training.length;  j++){
+	
+	if (j % 4 == 0) {
+		cur_number_array = jsPsych.randomization.sample(num_array,sequence_size,withReplacement=true);
+		cur_number_sequence = cur_number_array.join("");
+		console.log(cur_number_sequence);
+	}
+	
+	
+	trialNum_counter=trialNum_counter+1
+	
+	var cur_trial = trial_info_training[j];
+		
+	 var prompt = {
+		 type: 'learning-prompt',
+		 preload_images: imageSet,
+		 location1: "left",
+		 location2: "right",
+		 im1: "stimuli/"+set_num+"/"+cur_trial["image1"],
+		 im2: "stimuli/"+set_num+"/"+cur_trial["image2"],
+		 choices: ['START'],
+		 data: {trialNum: cur_trial["trial_num"], trialType: cur_trial["trial_type"]}
+ 		};
+		
+	trainingList.push(prompt);
+
+	 var trial = {
+		 type: 'learning',
+		 location1: "left",
+		 location2: "right",
+		 im1: "stimuli/"+set_num+"/"+cur_trial["image1"],
+		 im2: "stimuli/"+set_num+"/"+cur_trial["image2"],
+		 label1: "",
+		 label2: "",
+		 audio1: "stimuli/"+set_num+"/"+cur_trial["sound1"],
+		 audio2: "stimuli/"+set_num+"/"+cur_trial["sound2"],
+		 audio: "true",
+    	data: {trialNum: cur_trial["trial_num"], trialType: cur_trial["trial_type"]}
+ 		};
+	trainingList.push(trial);
+	
+	if (j % 4 == 0 & j > 0) {
+		
+		var test_memory = {
+			type: 'survey_text',
+			sequence: cur_number_sequence,
+			choices: ['ENTER'],
+			data: {trialNum: trialNum_counter, trialType: "memory_response"}
+		}
+		trainingList.push(test_memory);
+	}
+	
+	
+};
+
+
+// DEFINE TEST TRIALS
+
+var testList=[];
+
+// start with instructions about the label test
+// put in instructions about being fast here if we are interested in RTs
+var labelTestInstr = {
+type: 'instructions',
+pages: ['Now we will test how well you learned the words. You will hear a word and be asked to choose which of the two pictured objects goes with the word. In each trial, click START AUDIO. The word for one of the objects will be played. Click on the object you think the word refers to. First, we will test a few familiar words, to make sure your audio is working properly. Then, we will test how well you learned the new words. Click NEXT to get started.'],
+show_clickable_nav: true
+}
+
+testList.push(labelTestInstr);
+
+//familiar test trials
+var fam_test = {
+	type: 'comprehension-test',
+	choices: ['START AUDIO'],
+	timeline: [
+		{audio: 'stimuli/apple.m4a', image1: "stimuli/basketball.png", image2: "stimuli/apple.png", targetLocation: "right", targetImage: "stimuli/apple.png", data: {trialNum: 1, trialType: "familiar_test"}},
+		{audio: 'stimuli/ball.m4a', image1: "stimuli/basketball.png", image2: "stimuli/apple.png", targetLocation: "left", targetImage: "stimuli/basketball.png",data: {trialNum: 2, trialType: "familiar_test"}},
+	]
+};
+
+testList.push(fam_test);
+
+//test trials
+test_trial_counter=0
+for (j = 0; j < trial_info_test_shuffled.length;  j++){
+	test_trial_counter=test_trial_counter+1
+	
+	var cur_trial = trial_info_test_shuffled[j];
+		
+	var test = {
+		type: 'comprehension-test',
+			image1: "stimuli/"+set_num+"/"+cur_trial["image1"],
+			image2: "stimuli/"+set_num+"/"+cur_trial["image2"],
+			audio: "stimuli/"+set_num+"/"+cur_trial["sound"],
+			targetLocation: cur_trial["respLocation"],
+			targetImage: "stimuli/"+set_num+"/"+cur_trial["correct"],
+		choices: ['START AUDIO'],
+	    	data: {trialNum: test_trial_counter, trialID: cur_trial["trial_num"], trialType: cur_trial["trial_type"]}
+	};
+	
+	testList.push(test);
+};
+
+// final response survey
+var survey = {
+  type: 'survey-text',
+  questions: ["What strategy did you use to learn the words for the objects? (e.g., did you focus on tracking particular words or objects?)", "Did you have any audio or other technical issues during the study?"],
+  rows: [8,8],
+  columns: [70,70]
+};
+
+testList.push(survey);
+
+//combine all trials into timeline
+timeline=trainingList.concat(testList);
+//timeline=testList;
+
+// CREATE FINAL EXPERIMENT MESSAGE/ DEBRIEF AFTER DATA SUCCESSFULLY STORED
+// including a random code participants can use to confirm they took the study (for payment on Amazon Mechanical Turk)
+
+//create random code for final message
+//start code creation script
+function randLetter() {
+	var a_z = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+	var int =  Math.floor((Math.random() * a_z.length));
+	var rand_letter = a_z[int];
+	return rand_letter;
+};
+
+function getRandomInt(max) {
+  return Math.floor(Math.random() * max);
+}
+
+function getRandomIntSequence(seqLength) {
+	var sequence=""
+	for (var i = 0; i < seqLength; i++){
+		sequence = sequence.concat(getRandomInt().toString());
+	};
+	return sequence
+}
+
+var secretCode = "CrossSitRep" // this is the 'key'
+var code="";
+
+for (var i = 0; i < 7; i++){
+	code = code.concat(randLetter());
+};
+
+code = code.concat(secretCode);
+
+for (var i = 0; i < 10; i++){
+	code = code.concat(randLetter());
+}
+//end code creation script
+
+
+
+//debrief and code message
+var final_instructions = {
+	type: 'instructions',
+	size: 400,
+	pages: [
+		'Thanks for participating! This HIT is an experiment in which you were asked to learn words by keeping track of which words occurred with which aliens across time. We are interested in how people represent uncertainty and make decisions about what to learn next. If you have any questions, please feel free to send us a message (zettersten@wisc.edu)!'
+        +"<br>" + "<br>"
+        +'<center>Your completion code for <u>mTurk</u> is</center>'
+        +"<br>"
+        +'<center><u><b style="font-size:20px">'+ code +'</b></u></center>'
+        +"<br>"
+        +'<center>Please copy/paste this code into the mTurk box.</center>'
+        ],
+	show_clickable_nav: false
+};
+
+//add instructions trial to experiment
+experimentFinal.push(final_instructions);
+
+}
+
+// PRELOADING
+// this should be handled within the plugins, but I've gotten mixed results relying on this,
+// so to be extra sure, preload all relevant files prior to starting the experiment
+
+ 
+//preload all images
+var imageSet = [
+	"stimuli/basketball.png",
+	"stimuli/apple.png",
+	"stimuli/set1/Pictures/picture1.png",
+	"stimuli/set1/Pictures/picture2.png",
+	"stimuli/set1/Pictures/picture3.png",
+	"stimuli/set1/Pictures/picture4.png",
+	"stimuli/set1/Pictures/picture5.png",
+	"stimuli/set1/Pictures/picture6.png",
+	"stimuli/set1/Pictures/picture7.png",
+	"stimuli/set1/Pictures/picture8.png",
+	"stimuli/set1/Pictures/picture9.png",
+	"stimuli/set1/Pictures/picture10.png",
+	"stimuli/set2/Pictures/picture1.png",
+	"stimuli/set2/Pictures/picture2.png",
+	"stimuli/set2/Pictures/picture3.png",
+	"stimuli/set2/Pictures/picture4.png",
+	"stimuli/set2/Pictures/picture5.png",
+	"stimuli/set2/Pictures/picture6.png",
+	"stimuli/set2/Pictures/picture7.png",
+	"stimuli/set2/Pictures/picture8.png",
+	"stimuli/set2/Pictures/picture9.png",
+	"stimuli/set2/Pictures/picture10.png",
+];
+
+//preload audio (if audio gets added at some later point)  
+var allAudio = [
+	"stimuli/apple.m4a",
+	"stimuli/ball.m4a",
+	"stimuli/set1/Words/word1.m4a",
+	"stimuli/set1/Words/word2.m4a",
+	"stimuli/set1/Words/word3.m4a",
+	"stimuli/set1/Words/word4.m4a",
+	"stimuli/set1/Words/word5.m4a",
+	"stimuli/set1/Words/word6.m4a",
+	"stimuli/set1/Words/word7.m4a",
+	"stimuli/set1/Words/word8.m4a",
+	"stimuli/set1/Words/word9.m4a",
+	"stimuli/set1/Words/word10.m4a",
+	"stimuli/set2/Words/word1.m4a",
+	"stimuli/set2/Words/word2.m4a",
+	"stimuli/set2/Words/word3.m4a",
+	"stimuli/set2/Words/word4.m4a",
+	"stimuli/set2/Words/word5.m4a",
+	"stimuli/set2/Words/word6.m4a",
+	"stimuli/set2/Words/word7.m4a",
+	"stimuli/set2/Words/word8.m4a",
+	"stimuli/set2/Words/word9.m4a",
+	"stimuli/set2/Words/word10.m4a"
+];
+ 
+//function for tracking loading of audio files
+//useful if there are a lot of audio files 
+function updateLoadedCount(nLoaded){
+     var percentcomplete = nLoaded / allAudio.length * 100;
+
+     // could put something fancier here, like a progress bar
+     // or updating text in the DOM.
+     console.log('Loaded '+percentcomplete+'% of audio files');
+ }
+
+//run this line instead if we add audio
+jsPsych.pluginAPI.preloadImages(imageSet, function(){ jsPsych.pluginAPI.preloadAudioFiles(allAudio, function() {startExperiment(); },function(nLoaded) { updateLoadedCount(nLoaded); });});
+
+  
+// START & RUN EXPERIMENT
+// including unctions that handle storing the data
+
+//function for Javascript-PHP communication
+function saveData(filename, filedata){
+	$.ajax({
+		type:'post',
+		cache: false,
+		url: 'save_data.php', // this is the path to the PHP script for storing the data
+		data: {filename: filename, filedata: filedata}
+	});
+};
+
+//function to initialize the experiment; will be called once all images are preloaded
+function startExperiment(data, tabletop) {
+	createTrials(data,tabletop);
+	console.log(timeline);
+	jsPsych.init({
+		display_element: $('#jspsych-target'),
+		timeline: timeline,
+		show_progress_bar: true,
+		fullscreen: true,
+		default_iti: 0,
+		on_finish: function(data) {
+			//for testing: display data and store locally
+			//jsPsych.data.displayData("csv");
+			jsPsych.data.localSave("CrossSitRep_"+subject_id+".csv", "csv");
+			//below script is for storing data locally once the experiment is online
+			//saveData("CrossSitRep_"+subject_id+".csv", jsPsych.data.dataAsCSV());
+			
+			//add final instructions after data has been stored
+            jsPsych.init({
+                         display_element: $('#jspsych-target'),
+                         timeline: experimentFinal
+			});
+		}
+	});
+};
+  
+  
+</script>
+
+</html>

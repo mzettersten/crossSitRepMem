@@ -2,17 +2,10 @@ library(tidyverse)
 library(sciplot)
 library(cowplot)
 library(lme4)
-library(here)
 theme_set(theme_cowplot())
 
-#current directory
-cur_dir <- here()
-
-#folder path separator
-path_sep="/"
-
 #read in data
-d <- read_csv(paste(cur_dir,"analysis","version1","open_data","CrossSitRepMem_v1_data_cleaned.csv",sep=path_sep))
+d <- read_csv("open_data/CrossSitRepMem_v1_data_cleaned.csv")
 
 #look at data
 head(d)
@@ -46,7 +39,9 @@ testSubj<- d %>%
   subset(trial_type=="comprehension-test") %>%
   #filter(!(subject %in% subj_to_exclude)) %>%
   group_by(subject,condition,math_condition,list_num,set_num,trialType) %>%
-  summarize(n=n(),accuracy=mean(isRight))
+  summarize(n=n(),accuracy=mean(isRight)) %>%
+  mutate(math_condition_pretty=ifelse(math_condition=="math","Memory Load","No Memory Load"))
+
 
 testSubj <- merge(testSubj,audioCheck)
 
@@ -54,25 +49,64 @@ testSubj <- merge(testSubj,audioCheck)
 mean(filter(testSubj,trialType=="familiar_test")$accuracy)
 
 
+#### demographics ####
+
+demographics <- d %>%
+  #filter(!(subject %in% subj_to_exclude)) %>%
+  group_by(subject,condition, math_condition) %>%
+  summarize(Gender=gender[1],age=age_clean[1],education=education[1],languages_besides_english_yn=languages_besides_english[1],L1=native_language[1]) %>%
+  ungroup() %>%
+  mutate(L1_english=case_when(
+    languages_besides_english_yn=="no" ~ 1,
+    str_detect("english",L1) ~ 1,
+    TRUE ~ 0
+  )) %>%
+  group_by(condition, math_condition)  %>%
+  summarize(
+    N=n(),
+    gender_f=sum(Gender=="female"),
+    mean_age=round(mean(age,na.rm=T),2),
+    sd_age=round(sd(age,na.rm=T),2),
+    min_age=round(min(age,na.rm=T),2),
+    max_age=round(max(age,na.rm=T),2),
+    native_english=sum(L1_english,na.rm=TRUE),
+    languages_besides_english=sum(languages_besides_english_yn=="yes",na.rm=TRUE))
+
 #### summarize accuracy by condition ####
 
 #summarize subject data
 sum_subj_accuracy <- testSubj %>%
   filter(trialType=="test") %>%
   group_by(condition,math_condition) %>%
-  summarize(overall_accuracy=mean(accuracy),se=se(accuracy))
+  summarize(overall_accuracy=mean(accuracy),se=se(accuracy)) %>%
+  mutate(math_condition_pretty=ifelse(math_condition=="math","Memory Load","No Memory Load"))
   
 #ggplot 
-ggplot(sum_subj_accuracy,aes(condition,overall_accuracy,fill=condition))+
-  geom_bar(stat="identity", color="black",size=1.5, width=0.5)+
-  geom_dotplot(data=filter(testSubj, trialType=="test"),aes(x=condition,y=accuracy),stackdir="center", binaxis="y",dotsize=0.5)+
-  geom_errorbar(aes(ymin=overall_accuracy-se,ymax=overall_accuracy+se),width=0.05, size=1.2)+
-  geom_hline(yintercept=0.5, linetype="dashed",size=1.2)+
-  theme(legend.position="none")+
-  xlab("Condition")+
-  ylab("Overall Mean Test Accuracy")+
-  facet_wrap(~math_condition)
-ggsave("figures/CrossSitRepMem_v1.jpeg",width=10, height=5)
+ggplot(sum_subj_accuracy,aes(condition,overall_accuracy,fill=condition,color=condition))+
+  geom_bar(stat="identity",alpha=0.1,size=2) +
+  geom_hline(yintercept = 0.50, linetype = 'dashed', size = 0.70)+
+  geom_dotplot(data=filter(testSubj, trialType=="test"),aes(y=accuracy),binaxis="y",stackdir="center",dotsize=0.4) +
+  scale_y_continuous(name = "Mean Accuracy",limits=c(0,1)) +
+  geom_errorbar(aes(ymin=overall_accuracy-se,ymax=overall_accuracy+se),width=0.08, size=1.5)+
+  scale_fill_brewer(name="Condition",
+                    limits=c('interleaved','massed'), 
+                    labels=c("Interleaved", "Massed"),
+                    palette="Set1",direction=-1)+
+  scale_color_brewer(name="Condition",
+                     limits=c('interleaved','massed'), 
+                     labels=c("Interleaved", "Massed"),
+                     palette="Set1",direction=-1)+
+  theme(legend.position="none",
+        axis.text  = element_text(size=20),
+        axis.title = element_text(size=24,face="bold"),
+        strip.text = element_text(size = 20))+
+  facet_wrap(~math_condition_pretty)+
+  scale_x_discrete(name="Condition",
+                     limits=c('interleaved','massed'), 
+                     labels=c("Interleaved", "Massed"))
+ggsave("figures/CrossSitRepMem_v1.jpeg",width=15, height=9)
+ggsave("figures/CrossSitRepMem_v1.pdf",width=15, height=9)
+
 
 #summarize subject data
 sum_subj_accuracy <- testSubj %>%
@@ -127,6 +161,9 @@ m <- glmer(isRight~conditionC+(1|subject)+(1+conditionC|targetImage),data=filter
 summary(m)
 #step 2
 m <- glmer(isRight~conditionC+(1|subject)+(1|targetImage),data=filter(test_d, math_conditionC==0.5), family=binomial)
+summary(m)
+#step 3
+m <- glmer(isRight~conditionC+(1|subject),data=filter(test_d, math_conditionC==0.5), family=binomial)
 summary(m)
 
 
