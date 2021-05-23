@@ -11,7 +11,7 @@ jsPsych.plugins['production-memory'] = (function() {
 	  
       // default values
 	  trial.button_html = trial.button_html || '<button class="jspsych-btn">%choice%</button>';
-      trial.canvas_size = trial.canvas_size || [1024,315];
+      trial.canvas_size = trial.canvas_size || [1024,215];
 	  trial.targetLocation = trial.targetLocation || "top";
 	  trial.sequence = trial.sequence;
 	  trial.question = trial.question || "Type the number sequence in the correct order into the text box.";
@@ -34,7 +34,7 @@ jsPsych.plugins['production-memory'] = (function() {
 	  //add prompt text
 	  //display_element.append(trial.question + trial.label + "?");
 	  var text = paper.text(400, 55, trial.question);
-	  var finishText = paper.text(400, 75, trial.finishText);
+	  var finishText = paper.text(400, 95, trial.finishText);
 	  text.attr({
 		  "text-anchor": "middle",
 		  editable: true,
@@ -49,10 +49,10 @@ jsPsych.plugins['production-memory'] = (function() {
 	  var boxID = ""
 
 	  display_element.append($('<div>', {
-        "id": 'jspsych-produce-3',
+        "id": 'jspsych-produce-4',
       }));
-	  $("#jspsych-produce-3").append('<textarea id="jspsych-prodbox-3" cols="8" rows="1" autocorrect="off" autocapitalize="off" autocomplete="off" spellcheck="false"></textarea>');
-	  boxID = "jspsych-prodbox-3";
+	  $("#jspsych-produce-4").append('<textarea id="jspsych-prodbox-3" cols="8" rows="1" autocorrect="off" autocapitalize="off" autocomplete="off" spellcheck="false"></textarea>');
+	  boxID = "jspsych-prodbox-4";
 	  // bottomCircle.attr({
 	  // 		  fill: "#00ccff",
 	  // });
@@ -131,7 +131,7 @@ jsPsych.plugins['production-memory'] = (function() {
 		var isRight=0
 	  
 	  if (rating == trial.sequence) {
-		  var feedbackText = paper.text(400, 300, trial.correct_feedback);
+		  var feedbackText = paper.text(400, 200, trial.correct_feedback);
 		  feedbackText.attr({
 			  "text-anchor": "middle",
 			  editable: true,
@@ -140,7 +140,7 @@ jsPsych.plugins['production-memory'] = (function() {
 		  });
 		  isRight=1
 	  } else {
-		  var feedbackText = paper.text(400, 300, trial.incorrect_feedback);
+		  var feedbackText = paper.text(400, 200, trial.incorrect_feedback);
 		  feedbackText.attr({
 			  "text-anchor": "middle",
 			  editable: true,

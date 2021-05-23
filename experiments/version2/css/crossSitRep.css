@@ -37,7 +37,7 @@ html {
 }
 
 input[type=number]{
-    width: 70px;
+    width: 18px;
 } 
 
 #jspsych-bet-1 {
@@ -84,6 +84,13 @@ input[type=number]{
 	position: absolute;
 	left: 300px;
 	top: 220px;
+	
+}
+
+#jspsych-produce-4 {
+	position: absolute;
+	left: 275px;
+	top: 120px;
 	
 }
 

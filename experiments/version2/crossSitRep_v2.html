@@ -15,6 +15,7 @@
 	<script src="jspsych-audio-check.js"></script>
   	<script src="plugins/jspsych-button-response.js"></script>
   	<script src="plugins/jspsych-survey-text.js"></script>
+	<script src="plugins/jspsych-single-stim.js"></script>
     <link rel="stylesheet" href="css/jspsych.css"></link>
 	<link rel="stylesheet" href="css/jquery-ui.css"></link>
     <link rel="stylesheet" href="css/crossSitRep.css"></link>
@@ -95,10 +96,16 @@ if (list_num_temp == "list1") {
 var memory_condition_temp = getParamFromURL( 'mc' );
 if (memory_condition_temp == "as") {
 	var memory_condition = "high";
-} else if (memory_condition_temp == "n") {
+} else if (memory_condition_temp == "l") {
 	var memory_condition = "low";
+	var sequence_length = 2;
+	var sequence_length_word = "two"
+	var example_number_sequence = "12"
 } else {
 	var memory_condition = "high";
+	var sequence_length = 5;
+	var sequence_length_word = "five"
+	var example_number_sequence = "54871"
 }
 
 
@@ -154,6 +161,8 @@ function createTrials(data, tabletop) {
 // DEFINE TRAINING TRIALS
 
 var ITI = 500;
+var memory_length = 3
+var memory_length_word = "three"
 
 
 //training trials
@@ -180,12 +189,12 @@ var audio_check = {
 	]
 };
 
-trainingList.push(audio_check);
+//trainingList.push(audio_check);
 
 var instruction_info =
 "Great! Now, let's begin with the experiment. In the first task, you will learn the names for 8 different objects. On each trial, you will see two objects and hear two words. At first, you won't know which word goes with which object because the words will play <b>in random order</b>. Try to figure out over time which word goes with which object. Please do not write any information down - just do your best to remember and learn the words as you go. Remember that you'll hear the word for each of the two objects, but the order of the words will be completely random (so, for example, the first word that plays does not necessarily go with the left object).";
 
-var memory_info = "<br><br>At the beginning of every four trials, we will ask you to remember a sequence of five numbers (for example, the number sequence 54871). Your job is to try to remember this exact sequence while you are learning the words. After 4 trials, we will ask you to type in the number sequence from memory and give you feedback on whether you remembered it correctly. Then, we will show you a new number sequence to remember for the next four word learning trials. Try to remember the number sequence as best as you can. Please do not write down or copy the number - your compensation for the task will not depend on getting the number sequences correct. Just try to remember the numbers in order as best as you can as you learn the words.\n\n Make sure your audio is still on, then click NEXT to start learning!";
+var memory_info = "<br><br>At the beginning of every " + memory_length_word + " trials, we will ask you to remember a sequence of " + sequence_length_word + " numbers (for example, the number sequence " + example_number_sequence + "). Your job is to try to remember this exact sequence while you are learning the words. After "+ memory_length_word + " trials, we will ask you to type in the number sequence from memory and give you feedback on whether you remembered it correctly. Then, we will show you a new number sequence to remember for the next "+ memory_length_word + " word learning trials. Try to remember the number sequence as best as you can. Please do not write down or copy the number - your compensation for the task will not depend on getting the number sequences correct. Just try to remember the numbers in order as best as you can as you learn the words.\n\n Make sure your audio is still on, then click NEXT to start learning!";
 
 instruction_info=instruction_info+memory_info;
 console.log(instruction_info)
@@ -202,20 +211,53 @@ pages: instruction_pages,
 show_clickable_nav: true
 }
 
-trainingList.push(trial);
+//trainingList.push(trial);
 
 var trialNum_counter=0
 
 var cur_number_sequence = "";
 var num_array = ["0","1","2","3","4","5","6","7","8","9"];
-var sequence_size = 5;
+var sequence_length = 5;
 
 for (j = 0; j < trial_info_training.length;  j++){
 	
-	if (j % 4 == 0) {
-		cur_number_array = jsPsych.randomization.sample(num_array,sequence_size,withReplacement=true);
+	if (j % memory_length ==0) {
+		cur_number_array = jsPsych.randomization.sample(num_array,sequence_length,withReplacement=false);
 		cur_number_sequence = cur_number_array.join("");
 		console.log(cur_number_sequence);
+		
+		var mem_instruction_text = "<p>Next, we will ask you to remember a sequence of numbers, in order. We will show you the number sequence for 1 second, so be ready to remember the number. We will test your memory for the sequence later. <br><br> Click START to see the sequence.</p>"
+		var mem_instruction = {
+			type: 'button-response',
+			stimulus: mem_instruction_text,
+			is_html: true,
+			choices: ['START'],
+			data: {trialNum: cur_trial["trial_num"], trialType: "memory_instruction"}
+		}
+		
+		trainingList.push(mem_instruction);
+		
+		var memory_pres_1 = {
+			type: 'single-stim',
+			stimulus: '<p style="text-align:center;">Remember this sequence.</p>',
+			timing_response: 1000,
+			response_ends_trial: false,
+			is_html: true,
+			data: {trialNum: cur_trial["trial_num"], trialType: "memory_presentation_setup"}
+		}
+		
+		trainingList.push(memory_pres_1);
+		
+		var memory_pres_2 = {
+			type: 'single-stim',
+			stimulus: '<p style="text-align:center;">Remember this sequence.<br><br><b>'+cur_number_sequence+'</b></p>',
+			timing_response: 1500,
+			response_ends_trial: false,
+			is_html: true,
+			data: {trialNum: cur_trial["trial_num"], trialType: "memory_presentation"}
+		}
+		
+		trainingList.push(memory_pres_2);
 	}
 	
 	
@@ -251,7 +293,7 @@ for (j = 0; j < trial_info_training.length;  j++){
  		};
 	trainingList.push(trial);
 	
-	if (j % 4 == 0 & j > 0) {
+	if (j % memory_length == 2) {
 		
 		var test_memory = {
 			type: 'production-memory',
