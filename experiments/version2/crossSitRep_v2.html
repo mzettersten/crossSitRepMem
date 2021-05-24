@@ -189,7 +189,7 @@ var audio_check = {
 	]
 };
 
-//trainingList.push(audio_check);
+trainingList.push(audio_check);
 
 var instruction_info =
 "Great! Now, let's begin with the experiment. In the first task, you will learn the names for 8 different objects. On each trial, you will see two objects and hear two words. At first, you won't know which word goes with which object because the words will play <b>in random order</b>. Try to figure out over time which word goes with which object. Please do not write any information down - just do your best to remember and learn the words as you go. Remember that you'll hear the word for each of the two objects, but the order of the words will be completely random (so, for example, the first word that plays does not necessarily go with the left object).";
@@ -211,7 +211,7 @@ pages: instruction_pages,
 show_clickable_nav: true
 }
 
-//trainingList.push(trial);
+trainingList.push(trial);
 
 var trialNum_counter=0
 
@@ -250,7 +250,7 @@ for (j = 0; j < trial_info_training.length;  j++){
 		
 		var memory_pres_2 = {
 			type: 'single-stim',
-			stimulus: '<p style="text-align:center;">Remember this sequence.<br><br><b>'+cur_number_sequence+'</b></p>',
+			stimulus: '<p style="text-align:center;">Remember this sequence.<br><br><b style="font-size:24pt;">'+cur_number_sequence+'</b></p>',
 			timing_response: 1500,
 			response_ends_trial: false,
 			is_html: true,

@@ -89,7 +89,7 @@ input[type=number]{
 
 #jspsych-produce-4 {
 	position: absolute;
-	left: 275px;
+	left: 325px;
 	top: 120px;
 	
 }
@@ -121,6 +121,11 @@ input[type=number]{
 
 #jspsych-prodbox-3 {
 	font-size: 32pt;
+	font-weight: bold;
+}
+
+#jspsych-prodbox-4 {
+	font-size: 20pt;
 	font-weight: bold;
 }
 

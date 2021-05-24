@@ -11,7 +11,7 @@ jsPsych.plugins['production-memory'] = (function() {
 	  
       // default values
 	  trial.button_html = trial.button_html || '<button class="jspsych-btn">%choice%</button>';
-      trial.canvas_size = trial.canvas_size || [1024,215];
+      trial.canvas_size = trial.canvas_size || [1024,210];
 	  trial.targetLocation = trial.targetLocation || "top";
 	  trial.sequence = trial.sequence;
 	  trial.question = trial.question || "Type the number sequence in the correct order into the text box.";
@@ -51,7 +51,7 @@ jsPsych.plugins['production-memory'] = (function() {
 	  display_element.append($('<div>', {
         "id": 'jspsych-produce-4',
       }));
-	  $("#jspsych-produce-4").append('<textarea id="jspsych-prodbox-3" cols="8" rows="1" autocorrect="off" autocapitalize="off" autocomplete="off" spellcheck="false"></textarea>');
+	  $("#jspsych-produce-4").append('<textarea id="jspsych-prodbox-4" cols="8" rows="1" autocorrect="off" autocapitalize="off" autocomplete="off" spellcheck="false"></textarea>');
 	  boxID = "jspsych-prodbox-4";
 	  // bottomCircle.attr({
 	  // 		  fill: "#00ccff",
@@ -94,6 +94,15 @@ jsPsych.plugins['production-memory'] = (function() {
 	    
 	  var trial_data={};
 	  
+	  var feedbackText = paper.text(400, 190, trial.feedback);
+	  feedbackText.attr({
+		  "text-anchor": "middle",
+		  editable: true,
+		  fill: "#FF0000",
+		  "font-weight": "bold",
+		  opacity: 0
+	  });
+	  
 	  function after_response(choice) {
 		  var end_time = (new Date()).getTime();
 		  rt = end_time - start_time;
@@ -109,13 +118,9 @@ jsPsych.plugins['production-memory'] = (function() {
 		  //give warning message if string is empty
 		  if (val == "") {
 			  console.log("No response.")
-			  var feedbackText = paper.text(400, 300, trial.feedback);
-			  feedbackText.attr({
-				  "text-anchor": "middle",
-				  editable: true,
-				  fill: "#FF0000",
-				  "font-weight": "bold"
-			  });
+	  		feedbackText.attr({
+				"opacity": 1
+	  			})
 			  numIncorrectEntries++;
 			  $('.jspsych-button-response-button').removeAttr('disabled');
 		  } else {
@@ -129,10 +134,14 @@ jsPsych.plugins['production-memory'] = (function() {
 		//var audioFeedback = new Audio(trial.audioFeedback);
 		//audioFeedback.play();
 		var isRight=0
+		
+		feedbackText.attr({
+				"opacity": 0
+			});
 	  
 	  if (rating == trial.sequence) {
-		  var feedbackText = paper.text(400, 200, trial.correct_feedback);
-		  feedbackText.attr({
+		  var correct_feedback = paper.text(400, 190, trial.correct_feedback);
+		  correct_feedback.attr({
 			  "text-anchor": "middle",
 			  editable: true,
 			  fill: "green",
@@ -140,8 +149,8 @@ jsPsych.plugins['production-memory'] = (function() {
 		  });
 		  isRight=1
 	  } else {
-		  var feedbackText = paper.text(400, 200, trial.incorrect_feedback);
-		  feedbackText.attr({
+		  var incorrect_feedback = paper.text(400, 190, trial.incorrect_feedback);
+		  incorrect_feedback.attr({
 			  "text-anchor": "middle",
 			  editable: true,
 			  fill: "red",
