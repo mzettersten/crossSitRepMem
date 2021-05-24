@@ -233,7 +233,7 @@ for (j = 0; j < trial_info_training.length;  j++){
 		
 		var even_counter = 0;
 		for (k = 0; k < cur_number_sequence.length; k++) {
-			if (cur_number_sequence.substr(k,1).parseInt() % 2 == 0) {
+			if (parseInt(cur_number_sequence.substr(k,1)) % 2 == 0) {
 				even_counter++;
 			}
 			console.log(even_counter);
