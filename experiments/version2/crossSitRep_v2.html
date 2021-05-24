@@ -308,11 +308,16 @@ for (j = 0; j < trial_info_training.length;  j++){
 	
 	if (j % memory_length == 2) {
 		
+		if (memory_condition=="low") {
+			var question_prompt = "How many even numbers were in the last sequence?"
+		}
+		
 		var test_memory = {
 			type: 'production-memory',
 			sequence: cur_number_sequence,
 			num_even: even_counter,
 			condition: memory_condition,
+			question: question_prompt,
 			choices: ['ENTER'],
 			data: {trialNum: trialNum_counter, trialType: "memory_response"}
 		}
@@ -429,7 +434,7 @@ var final_instructions = {
 	type: 'instructions',
 	size: 400,
 	pages: [
-		'Thanks for participating! This HIT is an experiment in which you were asked to learn words by keeping track of which words occurred with which aliens across time. We are interested in how people represent uncertainty and make decisions about what to learn next. If you have any questions, please feel free to send us a message (zettersten@wisc.edu)!'
+		'Thanks for participating! This HIT is an experiment in which you were asked to learn words by keeping track of which words occurred with which aliens across time. We are interested in how people represent uncertainty and make decisions about what to learn next. If you have any questions, please feel free to send us a message (martincz@princeton.edu)!'
         +"<br>" + "<br>"
         +'<center>Your completion code for <u>mTurk</u> is</center>'
         +"<br>"
