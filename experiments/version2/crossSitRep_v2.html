@@ -218,9 +218,10 @@ show_clickable_nav: true
 
 trainingList.push(trial);
 
-var trialNum_counter=0
+var trialNum_counter=0;
 
 var cur_number_sequence = "";
+var even_counter = 0;
 var num_array = ["0","1","2","3","4","5","6","7","8","9"];
 
 for (j = 0; j < trial_info_training.length;  j++){
@@ -229,6 +230,14 @@ for (j = 0; j < trial_info_training.length;  j++){
 		cur_number_array = jsPsych.randomization.sample(num_array,sequence_length,withReplacement=false);
 		cur_number_sequence = cur_number_array.join("");
 		console.log(cur_number_sequence);
+		
+		var even_counter = 0;
+		for (k = 0; k < cur_number_sequence.length; k++) {
+			if (cur_number_sequence.substr(k,1).parseInt() % 2 == 0) {
+				even_counter++;
+			}
+			console.log(even_counter);
+		}
 		
 		var mem_instruction_text = "<p>Next, we will ask you to remember a sequence of numbers, in order. We will show you the number sequence for 1 second, so be ready to remember the number. We will test your memory for the sequence later. <br><br> Click START to see the sequence.</p>"
 		var mem_instruction = {
@@ -302,6 +311,8 @@ for (j = 0; j < trial_info_training.length;  j++){
 		var test_memory = {
 			type: 'production-memory',
 			sequence: cur_number_sequence,
+			num_even: even_counter,
+			condition: memory_condition,
 			choices: ['ENTER'],
 			data: {trialNum: trialNum_counter, trialType: "memory_response"}
 		}

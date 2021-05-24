@@ -133,34 +133,59 @@ jsPsych.plugins['production-memory'] = (function() {
       function endTrial(rating) {
 		//var audioFeedback = new Audio(trial.audioFeedback);
 		//audioFeedback.play();
-		var isRight=0
+		var isRight=0;
 		
 		feedbackText.attr({
 				"opacity": 0
 			});
+			
+		if (trial.condition=="high") {
+	  	  if (rating == trial.sequence) {
+	  		  var correct_feedback = paper.text(400, 190, trial.correct_feedback);
+	  		  correct_feedback.attr({
+	  			  "text-anchor": "middle",
+	  			  editable: true,
+	  			  fill: "green",
+	  			  "font-weight": "bold"
+	  		  });
+	  		  isRight=1
+	  	  } else {
+	  		  var incorrect_feedback = paper.text(400, 190, trial.incorrect_feedback);
+	  		  incorrect_feedback.attr({
+	  			  "text-anchor": "middle",
+	  			  editable: true,
+	  			  fill: "red",
+	  			  "font-weight": "bold"
+	  		  });
+	  	  }
+		} else if (trial.condition=="low") {
+  	  	  if (rating == trial.num_even) {
+  	  		  var correct_feedback = paper.text(400, 190, trial.correct_feedback);
+  	  		  correct_feedback.attr({
+  	  			  "text-anchor": "middle",
+  	  			  editable: true,
+  	  			  fill: "green",
+  	  			  "font-weight": "bold"
+  	  		  });
+  	  		  isRight=1
+  	  	  } else {
+  	  		  var incorrect_feedback = paper.text(400, 190, trial.incorrect_feedback);
+  	  		  incorrect_feedback.attr({
+  	  			  "text-anchor": "middle",
+  	  			  editable: true,
+  	  			  fill: "red",
+  	  			  "font-weight": "bold"
+  	  		  });
+  	  	  }
+			
+		}
 	  
-	  if (rating == trial.sequence) {
-		  var correct_feedback = paper.text(400, 190, trial.correct_feedback);
-		  correct_feedback.attr({
-			  "text-anchor": "middle",
-			  editable: true,
-			  fill: "green",
-			  "font-weight": "bold"
-		  });
-		  isRight=1
-	  } else {
-		  var incorrect_feedback = paper.text(400, 190, trial.incorrect_feedback);
-		  incorrect_feedback.attr({
-			  "text-anchor": "middle",
-			  editable: true,
-			  fill: "red",
-			  "font-weight": "bold"
-		  });
-	  }
+	  
 		
 		
         var trial_data = {
 			"correct_sequence": trial.sequence,
+			"num_even": trial.num_even,
 			"solution": rating,
 			"isRight": isRight,
 			"rt": rt,
