@@ -98,14 +98,8 @@ if (memory_condition_temp == "as") {
 	var memory_condition = "high";
 } else if (memory_condition_temp == "l") {
 	var memory_condition = "low";
-	var sequence_length = 2;
-	var sequence_length_word = "two"
-	var example_number_sequence = "12"
 } else {
 	var memory_condition = "high";
-	var sequence_length = 5;
-	var sequence_length_word = "five"
-	var example_number_sequence = "54871"
 }
 
 
@@ -191,12 +185,21 @@ var audio_check = {
 
 trainingList.push(audio_check);
 
+var sequence_length = 5;
+
 var instruction_info =
 "Great! Now, let's begin with the experiment. In the first task, you will learn the names for 8 different objects. On each trial, you will see two objects and hear two words. At first, you won't know which word goes with which object because the words will play <b>in random order</b>. Try to figure out over time which word goes with which object. Please do not write any information down - just do your best to remember and learn the words as you go. Remember that you'll hear the word for each of the two objects, but the order of the words will be completely random (so, for example, the first word that plays does not necessarily go with the left object).";
 
-var memory_info = "<br><br>At the beginning of every " + memory_length_word + " trials, we will ask you to remember a sequence of " + sequence_length_word + " numbers (for example, the number sequence " + example_number_sequence + "). Your job is to try to remember this exact sequence while you are learning the words. After "+ memory_length_word + " trials, we will ask you to type in the number sequence from memory and give you feedback on whether you remembered it correctly. Then, we will show you a new number sequence to remember for the next "+ memory_length_word + " word learning trials. Try to remember the number sequence as best as you can. Please do not write down or copy the number - your compensation for the task will not depend on getting the number sequences correct. Just try to remember the numbers in order as best as you can as you learn the words.\n\n Make sure your audio is still on, then click NEXT to start learning!";
+var memory_info_h = "<br><br>At the beginning of every " + memory_length_word + " trials, we will show you a sequence of five numbers (for example, the number sequence <b>54879</b>). Your job is to try to <b>remember this exact sequence of numbers in order</b> while you are learning the words. After "+ memory_length_word + " trials, we will ask you to type in the number sequence in order from memory and give you feedback on whether you remembered it correctly. Then, we will show you a new number sequence to remember for the next "+ memory_length_word + " word learning trials. Try to remember the number sequence as best as you can. Please do not write down or copy the number - your compensation for the task will not depend on getting the answer correct. Just try to remember the numbers in order as best as you can while you learn the words.\n\n Make sure your audio is still on, then click NEXT to start learning!";
 
-instruction_info=instruction_info+memory_info;
+var memory_info_l = "<br><br>At the beginning of every " + memory_length_word + " trials, we will show you a sequence of five numbers (for example, the number sequence <b>54879</b>). Your job is to try to <b>remember how many even numbers there were in the sequence</b> while you are learning the words. For example, if you saw the number sequence <b>54879</b>, you would answer <b>2</b>, because there are two even numbers in the sequence. After "+ memory_length_word + " trials, we will ask you to type in how many even numbers there were in the sequence from memory and give you feedback on whether you answered correctly. Then, we will show you a new number sequence and ask you to remember the amount of even numbers. We will test your memory again after the next "+ memory_length_word + " word learning trials. Try to remember how many even numbers the sequence has as best as you can. Please do not write down the number - your compensation for the task will not depend on getting the answer correct. Just try to remember the amount of even numbers as best as you can while you learn the words.\n\n Make sure your audio is still on, then click NEXT to start learning!";
+
+if (memory_condition == "high") {
+	instruction_info=instruction_info+memory_info_h;
+} else if (memory_condition=="low") {
+	instruction_info=instruction_info+memory_info_l;
+}
+
 console.log(instruction_info)
 
 var instruction_info_2 = "Make sure your audio is still on, then click NEXT to begin."
